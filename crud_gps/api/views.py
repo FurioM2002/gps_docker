@@ -19,10 +19,10 @@ class PosicionView(View):
     #Creación de Request GET (Posicion)    
     def get(self, request, posicion_id=None):
         if posicion_id is None:
-            # Listar todos los registros
+            #Listar todos los registros
             posiciones = Posicion.objects.all()
         else:
-            # Listar un registro específico por ID
+            #Listar un registro específico por ID
             try:
                 posiciones = Posicion.objects.filter(id=posicion_id)
             except Posicion.DoesNotExist:
@@ -53,13 +53,13 @@ class PosicionView(View):
             data.append(posicion_data)
 
         if posicion_id is None:
-            # Si no se proporciona un ID, listar todos los registros
+            #Si no se proporciona un ID, listar todos los registros
             response_data = {
                 "message": "Datos listados con éxito",
                 "posiciones": data
             }
         else:
-            # Si se proporciona un ID, listar el registro específico
+            #En caso de proporcionar un ID, listar el registro
             response_data = {
                 "message": f"Dato listado con éxito para la posición con ID {posicion_id}",
                 "posiciones": data
