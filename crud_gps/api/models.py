@@ -13,12 +13,7 @@ class Posicion(models.Model):
     acc=models.IntegerField()
     dil=models.IntegerField()
     towing=models.IntegerField()
-    fecha_hora = models.DateTimeField(auto_now_add=True)
-    
-    def save(self, *args, **kwargs):
-        # Actualiza la fecha y hora al guardar el objeto
-        self.fecha_hora = timezone.now()
-        super().save(*args, **kwargs)
+    fecha_hora = models.DateTimeField(default=timezone.now)
     
     def __str__(self):
         return f'Pocision #{self.id} - IMEI: {self.imei}'

@@ -114,7 +114,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+#Cambio de zona horaria a Lima
+TIME_ZONE = 'America/Lima'
 
 USE_I18N = True
 
