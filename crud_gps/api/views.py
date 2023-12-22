@@ -6,6 +6,10 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views import View
 from .models import Posicion
 import json
+import pandas as pd
+from django.http import HttpResponse
+from django.views import View
+import requests
 
 # Create your views here.
 #Creación de Views para el modelo Posicion
@@ -48,7 +52,8 @@ class PosicionView(View):
                     "acc": posicion.acc,
                     "dil": posicion.dil,
                     "towing": posicion.towing
-                }
+                },
+                "fecha_hora": posicion.fecha_hora
             }
             data.append(posicion_data)
 
@@ -127,3 +132,46 @@ class PosicionView(View):
                 "message": f"No se encontró el registro"
             }
         return JsonResponse(response_data)
+
+class ExportToExcelView(View):
+    def get(self, request, *args, **kwargs):
+        # Realiza la solicitud GET a la API
+        api_url = 'http://127.0.0.1:8000/api/posicion/'
+        response = requests.get(api_url)
+
+        # Verifica si la solicitud fue exitosa (código de estado 200)
+        if response.status_code == 200:
+            # Convierte los datos JSON en una lista de diccionarios
+            datos_api = response.json().get("posiciones", [])
+
+            # Desanida los datos antes de crear el DataFrame
+            desanidados = []
+            for dato in datos_api:
+                desanidado = {
+                    "imei": dato.get("imei", ""),
+                    "lat": dato.get("position", {}).get("lat", ""),
+                    "lon": dato.get("position", {}).get("lon", ""),
+                    "alt": dato.get("alt", ""),
+                    "speed": dato.get("speed", ""),
+                    "orientation": dato.get("orientation", ""),
+                    "acc": dato.get("sensores", {}).get("acc", ""),
+                    "dil": dato.get("sensores", {}).get("dil", ""),
+                    "towing": dato.get("sensores", {}).get("towing", ""),
+                    "fecha_hora": dato.get("fecha_hora", ""),
+                }
+                desanidados.append(desanidado)
+
+            # Define las columnas
+            columnas = ["imei", "lat", "lon", "alt", "speed", "orientation", "acc", "dil", "towing", "fecha_hora"]
+
+            # Crea el DataFrame directamente desde la lista de diccionarios
+            df = pd.DataFrame(desanidados, columns=columnas)
+
+            # Crea la respuesta del archivo Excel
+            response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+            response['Content-Disposition'] = 'attachment; filename=datos_api.xlsx'
+            df.to_excel(response, index=False)
+
+            return response
+        else:
+            return HttpResponse(f"Error en la solicitud a la API. Código de estado: {response.status_code}")

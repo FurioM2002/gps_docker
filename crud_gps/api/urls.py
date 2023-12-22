@@ -1,8 +1,8 @@
 from django.urls import path
-from .views import PosicionView
+from .views import PosicionView, ExportToExcelView
 
 urlpatterns = [
     path('posicion/', PosicionView.as_view(), name='posicion_list'),
     path('posicion/<int:posicion_id>/', PosicionView.as_view(), name='posicion_detail'),
-    path('posicion/imei/', PosicionView.as_view(), name='posicion_list_by_imei'),
+    path('export-excel/', ExportToExcelView.as_view(), name='export_excel'),
 ]
